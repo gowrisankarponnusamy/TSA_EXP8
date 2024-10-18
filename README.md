@@ -94,9 +94,5 @@ plt.show()
 ### Exponential Smoothing
 ![image](https://github.com/user-attachments/assets/1417efb2-51ce-4d3f-b5d5-2d34fe66370d)
 
-### result:
-Thus we have successfully implemented the Moving Average Model and Exponential smoothing using python.
-
-
 ### RESULT:
 Thus we have successfully implemented the Moving Average Model and Exponential smoothing using python.
