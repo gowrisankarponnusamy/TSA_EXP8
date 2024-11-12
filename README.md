@@ -21,78 +21,80 @@ the dataset
 11. Also perform exponential smoothing and plot the graph
 ### PROGRAM:
 ```
-import pandas as pd
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
-from statsmodels.tsa.api import SimpleExpSmoothing
+import warnings
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+warnings.filterwarnings('ignore')
 
-file_path = 'FINAL_USO.csv'
-data = pd.read_csv(file_path)
 
-data['Date'] = pd.to_datetime(data['Date'])
-data.set_index('Date', inplace=True)
 
-close_prices = data['USO_Close']
+data = pd.read_csv('raw_sales.csv')
 
 print("Shape of the dataset:", data.shape)
+print("First 20 rows of the dataset:")
 print(data.head(20))
 
-plt.figure(figsize=(10, 6))
+data['datesold'] = pd.to_datetime(data['datesold'])
+data.set_index('datesold', inplace=True)
 
-import warnings
-warnings.filterwarnings("ignore")
-
-plt.plot(close_prices.head(50), label='Original Data')
-plt.title('First 50 USO_Close Prices')
+plt.figure(figsize=(12, 6))
+plt.plot(data['price'], label='Original Price', color='blue')
+plt.title('Original Price Data')
 plt.xlabel('Date')
-plt.ylabel('USO Close Price')
-plt.grid(True)
+plt.ylabel('Price')
 plt.legend()
-plt.show(
-rolling_mean_5 = close_prices.rolling(window=5).mean()
-
-print("First 10 values of rolling mean (window=5):")
-print(rolling_mean_5.head(10))
-
-rolling_mean_10 = close_prices.rolling(window=10).mean()
-
-plt.figure(figsize=(10, 6))
-
-plt.plot(close_prices, label='Original Data')
-plt.plot(rolling_mean_5, label='Rolling Mean (window=5)', color='orange')
-plt.plot(rolling_mean_10, label='Rolling Mean (window=10)', color='red')
-plt.title('USO Close Price with Rolling Mean')
-plt.xlabel('Date')
-plt.ylabel('USO Close Price')
-plt.legend()
-plt.grid(True)
+plt.grid()
 plt.show()
 
-exp_smoothing = SimpleExpSmoothing(close_prices.dropna()).fit(smoothing_level=0.2, optimized=False)
-plt.show()
-+
-plt.figure(figsize=(10, 6))
-plt.plot(close_prices, label='Original Data')
-plt.plot(exp_smoothing.fittedvalues, label='Exponential Smoothing', color='green')
-plt.title('USO Close Price with Exponential Smoothing')
+rolling_mean_3 = data['price'].rolling(window=3).mean()
+
+plt.figure(figsize=(12, 6))
+plt.plot(data['price'], label='Original Price', color='blue')
+plt.plot(rolling_mean_3, label='Moving Average (window=3)', color='red')
+plt.title('Moving Average of Price')
 plt.xlabel('Date')
-plt.ylabel('USO Close Price')
+plt.ylabel('Price')
 plt.legend()
+plt.grid()
+plt.show()
+
+model = ExponentialSmoothing(data['price'], trend='add', seasonal=None)
+model_fit = model.fit()
+
+future_steps = 5
+predictions = model_fit.predict(start=len(data), end=len(data) + future_steps - 1)
+
+future_dates = pd.date_range(start=data.index[-1] + pd.Timedelta(days=1), periods=future_steps)
+
+plt.figure(figsize=(12, 6))
+plt.plot(data['price'], label='Original Price', color='blue')
+plt.plot(future_dates, predictions, label='Exponential Smoothing Forecast', color='red')
+plt.title('Exponential Smoothing Predictions for Price')
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.legend()
+plt.xticks(rotation=45)
 plt.grid(True)
+plt.tight_layout()
 plt.show()
 
 ```
 
 ### OUTPUT:
+### Given data:
+![image](https://github.com/user-attachments/assets/aa0414f4-5145-4ca5-9cf2-2e720dc1a12c)
 
 ### Moving Average
-![image](https://github.com/user-attachments/assets/e1558536-af0a-4fc3-84f7-495c39194ba2)
+![image](https://github.com/user-attachments/assets/404e61d5-802b-4e28-b157-975a52e9b685)
 
 ### Plot Transform Dataset
-![image](https://github.com/user-attachments/assets/a2addd76-a413-4aa9-8bfb-c03da2acf1ee)
+![Uploading image.png…]()
 
 ### Exponential Smoothing
-![image](https://github.com/user-attachments/assets/1417efb2-51ce-4d3f-b5d5-2d34fe66370d)
+![Uploading image.png…]()
+
 
 ### RESULT:
 Thus we have successfully implemented the Moving Average Model and Exponential smoothing using python.
